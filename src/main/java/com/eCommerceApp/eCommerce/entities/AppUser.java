@@ -42,7 +42,7 @@ public class AppUser {
     private List<Address> addresses;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "appUser")
+    @OneToMany(mappedBy = "user")
     private List<AppOrder> order;
 
 }
