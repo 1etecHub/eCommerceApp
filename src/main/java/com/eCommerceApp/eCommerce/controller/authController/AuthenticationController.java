@@ -5,6 +5,7 @@ import com.eCommerceApp.eCommerce.dto.RegistrationBody;
 import com.eCommerceApp.eCommerce.exception.EmailFailureException;
 import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
 import com.eCommerceApp.eCommerce.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class AuthenticationController {
         private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody RegistrationBody registrationBody){
+    public ResponseEntity registerUser(@RequestBody @Valid RegistrationBody registrationBody){
         try {
             userService.registerUser(registrationBody);
             return ResponseEntity.ok().build();
