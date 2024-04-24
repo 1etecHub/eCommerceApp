@@ -5,6 +5,7 @@ import com.eCommerceApp.eCommerce.dto.RegistrationBody;
 import com.eCommerceApp.eCommerce.entities.AppUser;
 import com.eCommerceApp.eCommerce.exception.EmailFailureException;
 import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
+import com.eCommerceApp.eCommerce.service.EncryptionService;
 import com.eCommerceApp.eCommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+    private final EncryptionService encryptionService;
 
     private final AppUserDAO appUserDAO;
     @Override
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(registrationBody.getUsername());
         user.setFirstName(registrationBody.getFirstName());
         user.setLastName(registrationBody.getLastName());
+        user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
         //user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
         //VerificationToken verificationToken = createVerificationToken(user);
         //emailService.sendVerificationEmail(verificationToken);

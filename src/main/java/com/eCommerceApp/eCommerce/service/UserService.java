@@ -7,5 +7,6 @@ import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
 
 public interface UserService {
 
+
     public AppUser registerUser(RegistrationBody registrationBody) throws UserAlreadyExistsException, EmailFailureException;
 }
