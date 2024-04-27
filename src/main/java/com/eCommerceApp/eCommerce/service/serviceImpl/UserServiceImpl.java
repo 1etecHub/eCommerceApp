@@ -1,10 +1,12 @@
 package com.eCommerceApp.eCommerce.service.serviceImpl;
 
 import com.eCommerceApp.eCommerce.dao.AppUserDAO;
+import com.eCommerceApp.eCommerce.dto.LoginBody;
 import com.eCommerceApp.eCommerce.dto.RegistrationBody;
 import com.eCommerceApp.eCommerce.entities.AppUser;
 import com.eCommerceApp.eCommerce.exception.EmailFailureException;
 import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
+import com.eCommerceApp.eCommerce.exception.UserNotVerifiedException;
 import com.eCommerceApp.eCommerce.service.EncryptionService;
 import com.eCommerceApp.eCommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,10 @@ public class UserServiceImpl implements UserService {
         //VerificationToken verificationToken = createVerificationToken(user);
         //emailService.sendVerificationEmail(verificationToken);
         return appUserDAO.save(user);
+
+    }
+
+    public String loginUser(LoginBody loginBody) throws UserNotVerifiedException, EmailFailureException {
 
     }
 }
