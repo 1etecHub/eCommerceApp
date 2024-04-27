@@ -8,9 +8,14 @@ import com.eCommerceApp.eCommerce.exception.EmailFailureException;
 import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
 import com.eCommerceApp.eCommerce.exception.UserNotVerifiedException;
 import com.eCommerceApp.eCommerce.service.EncryptionService;
+import com.eCommerceApp.eCommerce.service.JwtService;
 import com.eCommerceApp.eCommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final EncryptionService encryptionService;
 
     private final AppUserDAO appUserDAO;
+    private final JwtService jwtService;
     @Override
     public AppUser registerUser(RegistrationBody registrationBody) throws UserAlreadyExistsException, EmailFailureException {
 
@@ -39,7 +45,28 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
     public String loginUser(LoginBody loginBody) throws UserNotVerifiedException, EmailFailureException {
+        Optional<AppUser> opUser = appUserDAO.findByUsernameIgnoreCase(loginBody.getUsername());
+        if (opUser.isPresent()) {
+            AppUser user = opUser.get();
+            if (encryptionService.verifyPassword(loginBody.getPassword(), user.getPassword())) {
+                if (user.isEmailVerified()) {
+                    return jwtService.generateJWT(user);
+                } else {
+                    List<VerificationToken> verificationTokens = user.getVerificationTokens();
+                    boolean resend = verificationTokens.size() == 0 ||
+                            verificationTokens.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis() - (60 * 60 * 1000)));
+                    if (resend) {
+                        VerificationToken verificationToken = createVerificationToken(user);
+                        verificationTokenDAO.save(verificationToken);
+                        emailService.sendVerificationEmail(verificationToken);
+                    }
+                    throw new UserNotVerifiedException(resend);
+                }
+            }
+        }
+        return null;
 
     }
 }
