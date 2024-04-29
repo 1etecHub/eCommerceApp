@@ -1,14 +1,14 @@
 package com.eCommerceApp.eCommerce.service.serviceImpl;
 
 import com.eCommerceApp.eCommerce.dao.AppUserDAO;
+import com.eCommerceApp.eCommerce.dao.VerificationTokenDAO;
 import com.eCommerceApp.eCommerce.dto.LoginBody;
 import com.eCommerceApp.eCommerce.dto.RegistrationBody;
 import com.eCommerceApp.eCommerce.entities.AppUser;
+import com.eCommerceApp.eCommerce.entities.VerificationToken;
 import com.eCommerceApp.eCommerce.exception.EmailFailureException;
 import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
 import com.eCommerceApp.eCommerce.exception.UserNotVerifiedException;
-import com.eCommerceApp.eCommerce.service.EncryptionService;
-import com.eCommerceApp.eCommerce.service.JwtService;
 import com.eCommerceApp.eCommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,8 @@ public class UserServiceImpl implements UserService {
 
     private final AppUserDAO appUserDAO;
     private final JwtService jwtService;
+    private final EmailService emailService;
+    private final VerificationTokenDAO verificationTokenDAO;
     @Override
     public AppUser registerUser(RegistrationBody registrationBody) throws UserAlreadyExistsException, EmailFailureException {
 
@@ -38,9 +40,9 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(registrationBody.getFirstName());
         user.setLastName(registrationBody.getLastName());
         user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
-        //user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
-        //VerificationToken verificationToken = createVerificationToken(user);
-        //emailService.sendVerificationEmail(verificationToken);
+        user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
+        VerificationToken verificationToken = createVerificationToken(user);
+        emailService.sendVerificationEmail(verificationToken);
         return appUserDAO.save(user);
 
     }
@@ -68,5 +70,14 @@ public class UserServiceImpl implements UserService {
         }
         return null;
 
+    }
+
+    private VerificationToken createVerificationToken(AppUser user) {
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(jwtService.generateVerificationJWT(user));
+        verificationToken.setCreatedTimestamp(new Timestamp(System.currentTimeMillis()));
+        verificationToken.setUser(user);
+        user.getVerificationTokens().add(verificationToken);
+        return verificationToken;
     }
 }

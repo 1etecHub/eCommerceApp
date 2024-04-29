@@ -40,6 +40,7 @@ public class AuthenticationController {
     public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
         String jwt = null;
         try {
+
             jwt = userService.loginUser(loginBody);
         } catch (UserNotVerifiedException ex) {
             LoginResponse response = new LoginResponse();

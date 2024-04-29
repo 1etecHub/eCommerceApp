@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -44,5 +45,21 @@ public class AppUser {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<AppOrder> order;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id desc")
+    private List<VerificationToken> verificationTokens = new ArrayList<>();
+
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false;
+
+    /**
+     * Is the email verified?
+     * @return True if it is, false otherwise.
+     */
+    public Boolean isEmailVerified() {
+        return emailVerified;
+    }
 
 }

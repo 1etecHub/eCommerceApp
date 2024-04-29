@@ -1,4 +1,4 @@
-package com.eCommerceApp.eCommerce.service;
+package com.eCommerceApp.eCommerce.service.serviceImpl;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

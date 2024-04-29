@@ -1,4 +1,4 @@
-package com.eCommerceApp.eCommerce.service;
+package com.eCommerceApp.eCommerce.service.serviceImpl;
 
 
 import com.auth0.jwt.JWT;
