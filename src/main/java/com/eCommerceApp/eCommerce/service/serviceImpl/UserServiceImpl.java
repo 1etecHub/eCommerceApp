@@ -10,6 +10,7 @@ import com.eCommerceApp.eCommerce.exception.EmailFailureException;
 import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
 import com.eCommerceApp.eCommerce.exception.UserNotVerifiedException;
 import com.eCommerceApp.eCommerce.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -79,5 +80,21 @@ public class UserServiceImpl implements UserService {
         verificationToken.setUser(user);
         user.getVerificationTokens().add(verificationToken);
         return verificationToken;
+    }
+
+    @Transactional
+    public boolean verifyUser(String token) {
+        Optional<VerificationToken> opToken = verificationTokenDAO.findByToken(token);
+        if (opToken.isPresent()) {
+            VerificationToken verificationToken = opToken.get();
+            AppUser user = verificationToken.getUser();
+            if (!user.isEmailVerified()) {
+                user.setEmailVerified(true);
+                appUserDAO.save(user);
+                verificationTokenDAO.deleteByUser(user);
+                return true;
+            }
+        }
+        return false;
     }
 }
