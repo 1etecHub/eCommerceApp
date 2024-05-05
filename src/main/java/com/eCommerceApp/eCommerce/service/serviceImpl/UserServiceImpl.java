@@ -105,6 +105,7 @@ public class UserServiceImpl implements UserService {
      * @throws EmailNotFoundException Thrown if there is no user with that email.
      * @throws EmailFailureException
      */
+    @Override
     public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
         Optional<AppUser> opUser = appUserDAO.findByEmailIgnoreCase(email);
         if (opUser.isPresent()) {
@@ -115,4 +116,19 @@ public class UserServiceImpl implements UserService {
             throw new EmailNotFoundException();
         }
     }
+
+
+    /**
+     * Resets the users password using a given token and email.
+     * @param body The password reset information.
+     */
+    /*public void resetPassword(PasswordResetBody body) {
+        String email = jwtService.getResetPasswordEmail(body.getToken());
+        Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(email);
+        if (opUser.isPresent()) {
+            LocalUser user = opUser.get();
+            user.setPassword(encryptionService.encryptPassword(body.getPassword()));
+            localUserDAO.save(user);
+        }
+    }*/
 }
