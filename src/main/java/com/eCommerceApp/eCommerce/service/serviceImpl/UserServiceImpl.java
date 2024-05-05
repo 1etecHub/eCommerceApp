@@ -7,6 +7,7 @@ import com.eCommerceApp.eCommerce.dto.RegistrationBody;
 import com.eCommerceApp.eCommerce.entities.AppUser;
 import com.eCommerceApp.eCommerce.entities.VerificationToken;
 import com.eCommerceApp.eCommerce.exception.EmailFailureException;
+import com.eCommerceApp.eCommerce.exception.EmailNotFoundException;
 import com.eCommerceApp.eCommerce.exception.UserAlreadyExistsException;
 import com.eCommerceApp.eCommerce.exception.UserNotVerifiedException;
 import com.eCommerceApp.eCommerce.service.UserService;
@@ -96,5 +97,22 @@ public class UserServiceImpl implements UserService {
             }
         }
         return false;
+    }
+
+    /**
+     * Sends the user a forgot password reset based on the email provided.
+     * @param email The email to send to.
+     * @throws EmailNotFoundException Thrown if there is no user with that email.
+     * @throws EmailFailureException
+     */
+    public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
+        Optional<AppUser> opUser = appUserDAO.findByEmailIgnoreCase(email);
+        if (opUser.isPresent()) {
+            AppUser user = opUser.get();
+            String token = jwtService.generatePasswordResetJWT(user);
+            emailService.sendPasswordResetEmail(user, token);
+        } else {
+            throw new EmailNotFoundException();
+        }
     }
 }
