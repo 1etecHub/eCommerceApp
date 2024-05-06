@@ -3,6 +3,7 @@ package com.eCommerceApp.eCommerce.service.serviceImpl;
 import com.eCommerceApp.eCommerce.dao.AppUserDAO;
 import com.eCommerceApp.eCommerce.dao.VerificationTokenDAO;
 import com.eCommerceApp.eCommerce.dto.LoginBody;
+import com.eCommerceApp.eCommerce.dto.PasswordResetBody;
 import com.eCommerceApp.eCommerce.dto.RegistrationBody;
 import com.eCommerceApp.eCommerce.entities.AppUser;
 import com.eCommerceApp.eCommerce.entities.VerificationToken;
@@ -122,13 +123,13 @@ public class UserServiceImpl implements UserService {
      * Resets the users password using a given token and email.
      * @param body The password reset information.
      */
-    /*public void resetPassword(PasswordResetBody body) {
+    public void resetPassword(PasswordResetBody body) {
         String email = jwtService.getResetPasswordEmail(body.getToken());
-        Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(email);
+        Optional<AppUser> opUser = appUserDAO.findByEmailIgnoreCase(email);
         if (opUser.isPresent()) {
-            LocalUser user = opUser.get();
+            AppUser user = opUser.get();
             user.setPassword(encryptionService.encryptPassword(body.getPassword()));
-            localUserDAO.save(user);
+            appUserDAO.save(user);
         }
-    }*/
+    }
 }
