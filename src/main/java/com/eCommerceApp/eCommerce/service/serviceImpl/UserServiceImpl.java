@@ -132,4 +132,11 @@ public class UserServiceImpl implements UserService {
             appUserDAO.save(user);
         }
     }
+
+
+
+    public boolean userHasPermissionToUser(AppUser user, Long id) {
+        return user.getId() == id;
+    }
+
 }
